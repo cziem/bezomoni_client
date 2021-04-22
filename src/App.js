@@ -43,7 +43,7 @@ function App() {
   const handleChange = ({ target }) =>
     setState((prev) => ({ ...prev, [target.name]: target.value }));
 
-  const handleSubmit = (evt) => {
+  const handleSubmit = async (evt) => {
     evt.preventDefault();
 
     if (!state.password || !state.phone) {
@@ -64,25 +64,31 @@ function App() {
       });
     }
 
-    axios
-      .post(URL, state)
-      .then((res) => {
-        Swal.fire({
-          title: "Success!",
-          text: "Registration Successful, check the console for your secret",
-          icon: "success",
-          confirmButtonText: "Cool, let's go",
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-        Swal.fire({
-          title: "Oppps, Error!",
-          text: error.message,
-          icon: "error",
-          confirmButtonText: "Try again",
-        });
+    try {
+      const res = await axios.post(URL, state);
+
+      Swal.fire({
+        title: "Success!",
+        text: "Registration Successful, check the console for your secret",
+        icon: "success",
+        confirmButtonText: "Cool, let's go",
       });
+
+      setState({
+        password: "",
+        phone: "",
+      });
+
+      console.log(res.data);
+    } catch (error) {
+      console.log(error);
+      Swal.fire({
+        title: "Oppps, Error!",
+        text: error.message,
+        icon: "error",
+        confirmButtonText: "Try again",
+      });
+    }
   };
 
   return (
